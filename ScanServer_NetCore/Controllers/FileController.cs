@@ -1,9 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using ScanServer_NetCore.Models;
 using ScanServer_NetCore.Services.Interfaces;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace ScanServer_NetCore.Controllers
 {
@@ -16,14 +13,10 @@ namespace ScanServer_NetCore.Controllers
     {
         private IFileService _fileService;
 
-        private readonly ILogger<FileController> _logger;
-
         public FileController(
-            IFileService fileService, 
-            ILogger<FileController> logger)
+            IFileService fileService)
         {
             _fileService = fileService;
-            _logger = logger;
         }
 
 
@@ -33,11 +26,11 @@ namespace ScanServer_NetCore.Controllers
         /// <param name="filesToMerge"></param>
         /// <param name="resultFileName"></param>
         /// <returns></returns>
-        [Route("[action]/{resultFileName}")]
+        [Route("[action]/{folder}/{resultFileName}")]
         [HttpPost]
-        public bool MergeFiles([FromBody] List<FilePath> filesToMerge, [FromQuery] FilePath resultFileName)
+        public string MergeFiles([FromRoute] string folder, [FromRoute] string resultFileName, [FromBody] List<string> filesToMerge)
         {
-            var result = _fileService.MergeFiles(filesToMerge, resultFileName);
+            var result = _fileService.MergeFiles(folder, resultFileName, filesToMerge.ToArray());
             return result;
         }
 
@@ -47,26 +40,27 @@ namespace ScanServer_NetCore.Controllers
         /// </summary>
         /// <param name="fileToDelete"></param>
         /// <returns></returns>
+        [Route("[action]/{folder}/{fileName}")]
         [HttpDelete]
-        public bool DeleteFile(FilePath fileToDelete)
+        public bool DeleteFile([FromRoute] string folder, [FromRoute] string fileName)
         {
-            var result = _fileService.DeleteFile(fileToDelete);
+            var result = _fileService.DeleteFile(folder, fileName);
             return result;
         }
 
 
         /// <summary>
-        /// Return stream to file
+        /// Return file
         /// </summary>
         /// <param name="fileToRead"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<FileResult> ReadFile([FromQuery] FilePath fileToRead)
+        public FileResult ReadFile([FromQuery] string folder, [FromQuery] string fileToRead)
         {
-            var fileStream = await _fileService.ReadFileAsync(fileToRead);
+            var fileStream = _fileService.ReadFile(folder, fileToRead);
             return new FileStreamResult(fileStream, "application/pdf")
             {
-                FileDownloadName = fileToRead.FileName,
+                FileDownloadName = fileToRead,
                 EnableRangeProcessing = true
             };
         }
@@ -80,10 +74,9 @@ namespace ScanServer_NetCore.Controllers
         /// <returns></returns>
         [Route("[action]")]
         [HttpGet]
-        public async Task<List<FilePath>> ReadFiles([FromQuery] string directory)
+        public List<string> ReadFiles([FromQuery] string directory)
         {
-            _logger.LogInformation($"Reading files from folder '{directory}'");
-            var files = await _fileService.ReadFilesOfFolderAsync(directory);
+            var files = _fileService.ReadFilesOfFolder(directory);
             return files;
         }
 
@@ -95,11 +88,25 @@ namespace ScanServer_NetCore.Controllers
         /// <param name="oldFileName"></param>
         /// <param name="newFileName"></param>
         /// <returns></returns>
+        [Route("[action]/{folder}/{oldFileName}/{newFileName}")]
         [HttpPatch]
-        public async Task<bool> RenameFile(string directory, string oldFileName, string newFileName)
+        public string RenameFile(string folder, string oldFileName, string newFileName)
         {
-            var renamed = await _fileService.RenameFileAsync(directory, oldFileName, newFileName);
-            return renamed;
+            var renamedName = _fileService.RenameFile(folder, oldFileName, newFileName);
+            return renamedName;
+        }
+
+
+        /// <summary>
+        /// Return all folders
+        /// </summary>
+        /// <returns></returns>
+        [Route("[action]")]
+        [HttpGet]
+        public List<string> ReadFolders()
+        {
+            var folders = _fileService.ReadFolders();
+            return folders;
         }
 
 

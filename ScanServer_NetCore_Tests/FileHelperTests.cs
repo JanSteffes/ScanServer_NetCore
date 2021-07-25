@@ -5,7 +5,7 @@ using System.IO;
 using System.Threading.Tasks;
 
 namespace ScanServer_NetCore_Tests
-{
+{    
     public class FileHelperTests
     {
 

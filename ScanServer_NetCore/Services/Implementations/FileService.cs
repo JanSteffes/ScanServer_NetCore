@@ -1,13 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
 using PdfSharpCore.Pdf;
 using PdfSharpCore.Pdf.IO;
-using ScanServer_NetCore.Models;
 using ScanServer_NetCore.Services.Helper;
 using ScanServer_NetCore.Services.Interfaces;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace ScanServer_NetCore.Services.Implementations
 {
@@ -22,49 +20,55 @@ namespace ScanServer_NetCore.Services.Implementations
             _baseFolder = baseFolder;
         }
 
-        public bool DeleteFile(FilePath fileToDelete)
+        public bool DeleteFile(string folder, string fileToDelete)
         {
-            var filePath = Path.Combine(_baseFolder, fileToDelete.DirectoryName, fileToDelete.FileName);
+            var filePath = Path.Combine(_baseFolder, folder, fileToDelete);
             if (!File.Exists(filePath))
             {
-                throw new FileNotFoundException($"File {fileToDelete} could not be found!");
+                return false;
             }
             File.Delete(filePath);
             var fileGotDeleted = !File.Exists(filePath);
             return fileGotDeleted;
         }
 
-        public bool MergeFiles(List<FilePath> filesToMerge, FilePath resultFile)
+
+        public string MergeFiles(string folderName, string resultFileName, params string[] filesToMerge)
         {
-            var fullFilePaths = filesToMerge.Select(f => Path.Combine(_baseFolder, f.ToString())).ToList();
+            var workingFolder = Path.Combine(_baseFolder, folderName);
+            var fullFilePaths = filesToMerge.Select(f => Path.Combine(workingFolder, f)).ToList();
             var doAllFilesExist = fullFilePaths.All(filePath => File.Exists(filePath));
             if (!doAllFilesExist)
             {
                 var nonExistingFile = fullFilePaths.FirstOrDefault(file => !File.Exists(file));
                 throw new FileNotFoundException($"File at '{nonExistingFile}' could not be found!");
             }
-            //var commandToExecute = $"pdftk {string.Join(" ", filePaths)} cat output {resultFile}";
             using var outputDocument = new PdfDocument();
             _logger.LogInformation($"Starting to merge {fullFilePaths.Count} files...");
             foreach (var filePath in fullFilePaths)
             {
-                _logger.LogInformation($"processing file '{filePath}'..");
-                using var currentDocument = PdfReader.Open(filePath, PdfDocumentOpenMode.Import);
-                foreach(var page in currentDocument.Pages)
+                _logger.LogInformation($"Processing file '{filePath}'..");
+                using var currentSourceDocument = PdfReader.Open(filePath, PdfDocumentOpenMode.Import);
+                foreach (var page in currentSourceDocument.Pages)
                 {
                     outputDocument.AddPage(page);
                 }
             }
-            var resultFilePath = Path.Combine(_baseFolder, resultFile.ToString());
+            var resultFilePath = Path.Combine(workingFolder, resultFileName);
             resultFilePath = FileHelper.GetValidFileName(resultFilePath);
             using var resultFileStream = File.OpenWrite(resultFilePath);
             outputDocument.Save(resultFileStream);
-            return File.Exists(resultFilePath);
+            // didn't work
+            if (!File.Exists(resultFilePath))
+            {
+                return null;
+            }
+            return Path.GetFileName(resultFilePath);
         }
 
-        public async Task<FileStream> ReadFileAsync(FilePath fileToRead)
+        public FileStream ReadFile(string folder, string fileToRead)
         {
-            var filePath = Path.Combine(_baseFolder, fileToRead.DirectoryName, fileToRead.FileName);
+            var filePath = Path.Combine(_baseFolder, folder, fileToRead);
             if (File.Exists(filePath))
             {
                 return File.OpenRead(filePath);
@@ -72,23 +76,39 @@ namespace ScanServer_NetCore.Services.Implementations
             return null;
         }
 
-        public async Task<List<FilePath>> ReadFilesOfFolderAsync(string folder)
+        public List<string> ReadFilesOfFolder(string folder)
         {
-            var folderPath = Path.Combine(_baseFolder, folder + "/");
+            var folderPath = Path.Combine(_baseFolder, folder);
             _logger.LogInformation($"Reading files from folder '{folderPath}'");
-            var files = Directory.GetFiles(folderPath);
-            _logger.LogInformation($"Got {files.Count()} files: {string.Join(",",files)}");
-            var returnValue = files.Select(f => new FilePath
+            if (!Directory.Exists(folderPath))
             {
-                DirectoryName = folder,
-                FileName = Path.GetFileName(f)
-            }).ToList();
+                return null;
+            }
+            var files = Directory.GetFiles(folderPath);
+            _logger.LogInformation($"Got {files.Count()} files: {string.Join(",", files)}");
+            var returnValue = files.Select(f => Path.GetFileName(f)).ToList();
             return returnValue;
         }
 
-        public async Task<bool> RenameFileAsync(string directoryOfFile, string oldName, string newName)
+        public string RenameFile(string folder, string oldName, string newName)
         {
-            return false;
+            var folderPath = Path.Combine(_baseFolder, folder);
+            var oldFilePath = Path.Combine(folderPath, oldName);
+            if (!File.Exists(oldFilePath))
+            {
+                return null;
+            }
+            var newFilePath = Path.Combine(folderPath, newName);
+            var validatedNewFilePath = FileHelper.GetValidFileName(newFilePath);      
+            File.Copy(oldFilePath, validatedNewFilePath);
+            File.Delete(oldFilePath);
+            return Path.GetFileName(validatedNewFilePath);
+        }
+
+        public List<string> ReadFolders()
+        {
+            var folders = Directory.GetDirectories(_baseFolder).Select(p => Path.GetFileName(p)).ToList();
+            return folders;
         }
     }
 }

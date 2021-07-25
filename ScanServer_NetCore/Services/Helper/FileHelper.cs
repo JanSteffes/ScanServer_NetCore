@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.IO;
 
 namespace ScanServer_NetCore.Services.Helper
 {
@@ -51,7 +47,7 @@ namespace ScanServer_NetCore.Services.Helper
                 return pureFileName + "_0" + extension;
             }
             // there's an underscore contained, check if afterwords are only numbers
-            var afterUnderScore = pureFileName.Substring(posOfUnderscore);
+            var afterUnderScore = pureFileName[posOfUnderscore..];
             if (!int.TryParse(afterUnderScore, out var currentIndex))
             {
                 return pureFileName + "_0" + extension;

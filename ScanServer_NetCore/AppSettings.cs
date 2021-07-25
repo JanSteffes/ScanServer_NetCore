@@ -3,5 +3,7 @@
     public class AppSettings
     {
         public string BasePath { get; set; }
+
+        public string FoldersDateFormat { get; set; }
     }
 }

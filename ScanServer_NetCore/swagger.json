@@ -5,22 +5,16 @@
     "version": "v1"
   },
   "paths": {
-    "/api/File/MergeFiles/{resultFileName}": {
+    "/api/File/MergeFiles/{folder}/{resultFileName}": {
       "post": {
         "tags": [
           "File"
         ],
         "parameters": [
           {
-            "name": "DirectoryName",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "FileName",
-            "in": "query",
+            "name": "folder",
+            "in": "path",
+            "required": true,
             "schema": {
               "type": "string"
             }
@@ -40,7 +34,7 @@
               "schema": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/components/schemas/FilePath"
+                  "type": "string"
                 }
               }
             },
@@ -48,7 +42,7 @@
               "schema": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/components/schemas/FilePath"
+                  "type": "string"
                 }
               }
             },
@@ -56,7 +50,7 @@
               "schema": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/components/schemas/FilePath"
+                  "type": "string"
                 }
               }
             }
@@ -262,6 +256,21 @@
     "schemas": {
       "FilePath": {
         "type": "object",
+        "properties": {
+          "directoryName": {
+            "type": "string",
+            "nullable": true
+          },
+          "fileName": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}    "type": "object",
         "properties": {
           "directoryName": {
             "type": "string",
