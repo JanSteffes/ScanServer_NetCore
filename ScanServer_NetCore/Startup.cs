@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.OpenApi.Models;
 using ScanServer_NetCore.Services.Implementations;
 using ScanServer_NetCore.Services.Interfaces;
 using System;
@@ -19,7 +18,7 @@ namespace ScanServer_NetCore
         private readonly AppSettings AppSettings;
         public IConfiguration Configuration { get; }
 
-        private ILogger StartupLogger { get; set; }
+        private ILogger? StartupLogger { get; set; }
 
         public Startup(IConfiguration configuration)
         {
@@ -39,6 +38,11 @@ namespace ScanServer_NetCore
             AppSettings = Configuration.Get<AppSettings>();
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
+                if (string.IsNullOrEmpty(AppSettings.BasePath))
+                {
+                    var argumentNullException = new NullReferenceException($"BasePath cannot be null or empty!");
+                    throw argumentNullException;
+                }
                 AppSettings.BasePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), AppSettings.BasePath);
             }
             Console.WriteLine($"==> BasePath = {AppSettings.BasePath}");
@@ -55,22 +59,24 @@ namespace ScanServer_NetCore
             });
             StartupLogger = loggerFactory.CreateLogger<Startup>();
             StartupLogger.LogInformation($"Using basePath {AppSettings.BasePath}");
+            if (string.IsNullOrEmpty(AppSettings.BasePath))
+            {
+                throw new NullReferenceException($"BasePath cannot be null or empty!");
+            }
             services.AddSingleton(typeof(IFileService), new FileService(loggerFactory, AppSettings.BasePath));
             services.AddSingleton(typeof(IScanService), new ScanService(loggerFactory, AppSettings.BasePath));
             services.AddControllers();
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "ScanServer_NetCore", Version = "v1" });
-                c.EnableAnnotations();
-            });
+            // Register the Swagger services
+            services.AddSwaggerDocument();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseDeveloperExceptionPage();
-            app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", $"ScanServer_NetCore {DateTime.Now:dd.MM.yyyy HH:mm:ss}"));
+            // Register the Swagger generator and the Swagger UI middlewares
+            app.UseOpenApi();
+            app.UseSwaggerUi3();
 
             //app.UseHttpsRedirection();
 
@@ -92,6 +98,10 @@ namespace ScanServer_NetCore
         {
             var client = new HttpClient();
             using var stream = await client.GetStreamAsync("https://localhost:44309/swagger/v1/swagger.json");
+            if (File.Exists("swagger.json"))
+            {
+                File.Delete("swagger.json");
+            }
             using var localFileStream = File.OpenWrite("swagger.json");
             await stream.CopyToAsync(localFileStream);
         }

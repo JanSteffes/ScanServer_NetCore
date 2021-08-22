@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ScanServer_NetCore.Services.Interfaces;
 using System.Collections.Generic;
+using System.Net;
 
 namespace ScanServer_NetCore.Controllers
 {
@@ -28,10 +29,16 @@ namespace ScanServer_NetCore.Controllers
         /// <returns>name of the result file, can be null</returns>
         [Route("[action]/{folder}/{resultFileName}")]
         [HttpPost]
-        public string MergeFiles([FromRoute] string folder, [FromRoute] string resultFileName, [FromBody] List<string> filesToMerge)
+        [ProducesResponseType(typeof(string), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
+        public ActionResult MergeFiles([FromRoute] string folder, [FromRoute] string resultFileName, [FromBody] List<string> filesToMerge)
         {
             var result = _fileService.MergeFiles(folder, resultFileName, filesToMerge.ToArray());
-            return result;
+            if (string.IsNullOrEmpty(result))
+            {
+                return BadRequest($"Could not merge files!");
+            }
+            return Ok(result);
         }
 
 
@@ -42,10 +49,11 @@ namespace ScanServer_NetCore.Controllers
         /// <returns></returns>
         [Route("[action]/{folder}/{fileName}")]
         [HttpDelete]
-        public bool DeleteFile([FromRoute] string folder, [FromRoute] string fileName)
+        [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
+        public ActionResult DeleteFile([FromRoute] string folder, [FromRoute] string fileName)
         {
             var result = _fileService.DeleteFile(folder, fileName);
-            return result;
+            return Ok(result);
         }
 
 
@@ -55,9 +63,15 @@ namespace ScanServer_NetCore.Controllers
         /// <param name="fileToRead"></param>
         /// <returns></returns>
         [HttpGet]
-        public FileResult ReadFile([FromQuery] string folder, [FromQuery] string fileToRead)
+        [ProducesResponseType(typeof(FileResult), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
+        public ActionResult ReadFile([FromQuery] string folder, [FromQuery] string fileToRead)
         {
             var fileStream = _fileService.ReadFile(folder, fileToRead);
+            if (fileStream == null)
+            {
+                return BadRequest($"Failed to read file!");
+            }
             return new FileStreamResult(fileStream, "application/pdf")
             {
                 FileDownloadName = fileToRead,
@@ -74,10 +88,16 @@ namespace ScanServer_NetCore.Controllers
         /// <returns></returns>
         [Route("[action]")]
         [HttpGet]
-        public List<string> ReadFiles([FromQuery] string directory)
+        [ProducesResponseType(typeof(List<string>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
+        public ActionResult ReadFiles([FromQuery] string directory)
         {
             var files = _fileService.ReadFilesOfFolder(directory);
-            return files;
+            if (files == null)
+            {
+                return BadRequest($"Could not read files of folder!");
+            }
+            return Ok(files);
         }
 
 
@@ -90,10 +110,16 @@ namespace ScanServer_NetCore.Controllers
         /// <returns></returns>
         [Route("[action]/{folder}/{oldFileName}/{newFileName}")]
         [HttpPatch]
-        public string RenameFile(string folder, string oldFileName, string newFileName)
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
+        public ActionResult RenameFile(string folder, string oldFileName, string newFileName)
         {
             var renamedName = _fileService.RenameFile(folder, oldFileName, newFileName);
-            return renamedName;
+            if (string.IsNullOrEmpty(renamedName))
+            {
+                return BadRequest($"Renaming the file failed!");
+            }
+            return Ok(renamedName);
         }
 
 
@@ -103,10 +129,11 @@ namespace ScanServer_NetCore.Controllers
         /// <returns></returns>
         [Route("[action]")]
         [HttpGet]
-        public List<string> ReadFolders()
+        [ProducesResponseType(typeof(List<string>), (int)HttpStatusCode.OK)]
+        public ActionResult ReadFolders()
         {
             var folders = _fileService.ReadFolders();
-            return folders;
+            return Ok(folders);
         }
 
 

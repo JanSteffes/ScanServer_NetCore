@@ -16,7 +16,6 @@ namespace ScanServer_NetCore.Services.Interfaces
         /// <param name="fileName"></param>
         /// <param name="scanQuality"></param>
         /// <returns>filename on success, null on failure</returns>
-        [CanBeNull]
-        Task<string> Scan(string folderName, string fileName, ScanQuality scanQuality);
+        Task<string?> Scan(string folderName, string fileName, ScanQuality scanQuality);
     }
 }

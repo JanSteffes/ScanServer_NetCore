@@ -15,9 +15,8 @@ namespace ScanServer_NetCore.Services.Interfaces
         /// <param name="folderName">folder for all thos efiles</param>
         /// <param name="resultFileName">resulting filename</param>
         /// <param name="filesToMerge">names of files to merge together</param>
-        /// <returns>resultFileName</returns>
-        [CanBeNull]
-        string MergeFiles(string folderName, string resultFileName, params string[] filesToMerge);
+        /// <returns>resultFileName or null on error</returns>
+        string? MergeFiles(string folderName, string resultFileName, params string[] filesToMerge);
 
         /// <summary>
         /// Delete the given file
@@ -32,8 +31,7 @@ namespace ScanServer_NetCore.Services.Interfaces
         /// </summary>
         /// <param name="folder"></param>
         /// <returns></returns>
-        [CanBeNull]
-        List<string> ReadFilesOfFolder(string folder);
+        List<string>? ReadFilesOfFolder(string folder);
 
         /// <summary>
         /// Return stream to the file to read
@@ -41,8 +39,7 @@ namespace ScanServer_NetCore.Services.Interfaces
         /// <param name="folder"></param>
         /// <param name="fileToRead"></param>
         /// <returns></returns>
-        [CanBeNull]
-        FileStream ReadFile(string folder, string fileToRead);
+        FileStream? ReadFile(string folder, string fileToRead);
 
         /// <summary>
         /// Return list of folders
@@ -56,8 +53,7 @@ namespace ScanServer_NetCore.Services.Interfaces
         /// <param name="directoryOfFile"></param>
         /// <param name="oldName"></param>
         /// <param name="newName"></param>
-        /// <returns></returns>
-        [CanBeNull]
-        string RenameFile(string directoryOfFile, string oldName, string newName);
+        /// <returns>new name of file or null on error</returns>
+        string? RenameFile(string directoryOfFile, string oldName, string newName);
     }
 }

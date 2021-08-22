@@ -20,13 +20,17 @@ namespace ScanServer_NetCore.Services.Implementations
             _baseFolder = baseFolder;
         }
 
-        public async Task<string> Scan(string folderName, string fileName, ScanQuality scanQuality)
+        public async Task<string?> Scan(string folderName, string fileName, ScanQuality scanQuality)
         {
             if (Path.GetExtension(fileName) != ".pdf")
             {
                 fileName += ".pdf";
             }
-            var workingDir = Path.Combine(_baseFolder, folderName);           
+            var workingDir = Path.Combine(_baseFolder, folderName);  
+            if (!Directory.Exists(workingDir))
+            {
+                Directory.CreateDirectory(workingDir);
+            }
             var filePath = Path.Combine(workingDir, fileName);
             // check if filename is taken and generate new name
             var targetFile = FileHelper.GetValidFileName(filePath);

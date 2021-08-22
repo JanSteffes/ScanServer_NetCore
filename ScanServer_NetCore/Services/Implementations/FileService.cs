@@ -34,7 +34,7 @@ namespace ScanServer_NetCore.Services.Implementations
         }
 
 
-        public string MergeFiles(string folderName, string resultFileName, params string[] filesToMerge)
+        public string? MergeFiles(string folderName, string resultFileName, params string[] filesToMerge)
         {
             var workingFolder = Path.Combine(_baseFolder, folderName);
             var fullFilePaths = filesToMerge.Select(f => Path.Combine(workingFolder, f)).ToList();
@@ -67,7 +67,7 @@ namespace ScanServer_NetCore.Services.Implementations
             return Path.GetFileName(resultFilePath);
         }
 
-        public FileStream ReadFile(string folder, string fileToRead)
+        public FileStream? ReadFile(string folder, string fileToRead)
         {
             var filePath = Path.Combine(_baseFolder, folder, fileToRead);
             if (File.Exists(filePath))
@@ -77,7 +77,7 @@ namespace ScanServer_NetCore.Services.Implementations
             return null;
         }
         
-        public List<string> ReadFilesOfFolder(string folder)
+        public List<string>? ReadFilesOfFolder(string folder)
         {
             var folderPath = Path.Combine(_baseFolder, folder);
             _logger.LogInformation($"Reading files from folder '{folderPath}'");
@@ -91,7 +91,7 @@ namespace ScanServer_NetCore.Services.Implementations
             return returnValue;
         }
 
-        public string RenameFile(string folder, string oldName, string newName)
+        public string? RenameFile(string folder, string oldName, string newName)
         {
             var folderPath = Path.Combine(_baseFolder, folder);
             var oldFilePath = Path.Combine(folderPath, oldName);

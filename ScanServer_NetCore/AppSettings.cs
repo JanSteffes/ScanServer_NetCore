@@ -2,8 +2,8 @@
 {
     public class AppSettings
     {
-        public string BasePath { get; set; }
+        public string? BasePath { get; set; }
 
-        public string FoldersDateFormat { get; set; }
+        public string? FoldersDateFormat { get; set; }
     }
 }

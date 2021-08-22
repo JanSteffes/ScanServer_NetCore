@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using ScanServer_NetCore.Services.Enums;
 using ScanServer_NetCore.Services.Interfaces;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace ScanServer_NetCore.Controllers
@@ -33,10 +34,16 @@ namespace ScanServer_NetCore.Controllers
         /// <param name="scanQuality">quality to scan with</param>
         /// <returns>filename of the resultfile (may changed if original name was taken) or null if scanning failed</returns>
         [HttpPost]
-        public async Task<string> Scan(string folderName, string fileName, ScanQuality scanQuality)
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
+        public async Task<ActionResult> Scan(string folderName, string fileName, ScanQuality scanQuality)
         {            
             var result = await _scanService.Scan(folderName, fileName, scanQuality);
-            return result;
+            if (string.IsNullOrEmpty(result))
+            {
+                return BadRequest($"Failed to scan file!");
+            }
+            return Ok(result);
         }
     }
 }

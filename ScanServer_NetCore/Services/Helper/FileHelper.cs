@@ -22,6 +22,10 @@ namespace ScanServer_NetCore.Services.Helper
                 return filePath;
             }
             var directory = Path.GetDirectoryName(filePath);
+            if (string.IsNullOrEmpty(directory))
+            {
+                throw new InvalidDataException($"Directory from '{filePath}' could not be found!");
+            }
             do
             {
                 filePath = Path.Combine(directory, IncreaseFileName(Path.GetFileName(filePath)));
