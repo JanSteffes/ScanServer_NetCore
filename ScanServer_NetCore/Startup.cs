@@ -40,7 +40,8 @@ namespace ScanServer_NetCore
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
                 AppSettings.BasePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), AppSettings.BasePath);
-            }           
+            }
+            Console.WriteLine($"==> BasePath = {AppSettings.BasePath}");
         }
 
 
@@ -55,6 +56,7 @@ namespace ScanServer_NetCore
             StartupLogger = loggerFactory.CreateLogger<Startup>();
             StartupLogger.LogInformation($"Using basePath {AppSettings.BasePath}");
             services.AddSingleton(typeof(IFileService), new FileService(loggerFactory, AppSettings.BasePath));
+            services.AddSingleton(typeof(IScanService), new ScanService(loggerFactory, AppSettings.BasePath));
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {

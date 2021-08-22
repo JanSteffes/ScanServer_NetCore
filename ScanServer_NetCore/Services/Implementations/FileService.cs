@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using JetBrains.Annotations;
+using Microsoft.Extensions.Logging;
 using PdfSharpCore.Pdf;
 using PdfSharpCore.Pdf.IO;
 using ScanServer_NetCore.Services.Helper;
@@ -11,7 +12,7 @@ namespace ScanServer_NetCore.Services.Implementations
 {
     public class FileService : IFileService
     {
-        private ILogger _logger;
+        private readonly ILogger _logger;
         private readonly string _baseFolder;
 
         public FileService(ILoggerFactory loggerFactory, string baseFolder)
@@ -75,7 +76,7 @@ namespace ScanServer_NetCore.Services.Implementations
             }
             return null;
         }
-
+        
         public List<string> ReadFilesOfFolder(string folder)
         {
             var folderPath = Path.Combine(_baseFolder, folder);

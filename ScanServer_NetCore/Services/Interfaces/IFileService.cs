@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using JetBrains.Annotations;
+using System.Collections.Generic;
 using System.IO;
 
 namespace ScanServer_NetCore.Services.Interfaces
@@ -15,6 +16,7 @@ namespace ScanServer_NetCore.Services.Interfaces
         /// <param name="resultFileName">resulting filename</param>
         /// <param name="filesToMerge">names of files to merge together</param>
         /// <returns>resultFileName</returns>
+        [CanBeNull]
         string MergeFiles(string folderName, string resultFileName, params string[] filesToMerge);
 
         /// <summary>
@@ -30,6 +32,7 @@ namespace ScanServer_NetCore.Services.Interfaces
         /// </summary>
         /// <param name="folder"></param>
         /// <returns></returns>
+        [CanBeNull]
         List<string> ReadFilesOfFolder(string folder);
 
         /// <summary>
@@ -38,6 +41,7 @@ namespace ScanServer_NetCore.Services.Interfaces
         /// <param name="folder"></param>
         /// <param name="fileToRead"></param>
         /// <returns></returns>
+        [CanBeNull]
         FileStream ReadFile(string folder, string fileToRead);
 
         /// <summary>
@@ -53,6 +57,7 @@ namespace ScanServer_NetCore.Services.Interfaces
         /// <param name="oldName"></param>
         /// <param name="newName"></param>
         /// <returns></returns>
+        [CanBeNull]
         string RenameFile(string directoryOfFile, string oldName, string newName);
     }
 }

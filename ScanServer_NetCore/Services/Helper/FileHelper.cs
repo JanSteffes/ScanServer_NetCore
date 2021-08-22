@@ -11,7 +11,7 @@ namespace ScanServer_NetCore.Services.Helper
         /// Check if file exists, and if so, add/increase count at the end of the fileName till it does not exist anymore.
         /// </summary>
         /// <param name="filePath"></param>
-        /// <returns></returns>
+        /// <returns>Full path to valid file name</returns>
         public static string GetValidFileName(string filePath)
         {
 

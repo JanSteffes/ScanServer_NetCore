@@ -21,11 +21,11 @@ namespace ScanServer_NetCore.Controllers
 
 
         /// <summary>
-        /// Merge the given files and return result.
+        /// Merge the given files and return result name.
         /// </summary>
         /// <param name="filesToMerge"></param>
         /// <param name="resultFileName"></param>
-        /// <returns></returns>
+        /// <returns>name of the result file, can be null</returns>
         [Route("[action]/{folder}/{resultFileName}")]
         [HttpPost]
         public string MergeFiles([FromRoute] string folder, [FromRoute] string resultFileName, [FromBody] List<string> filesToMerge)

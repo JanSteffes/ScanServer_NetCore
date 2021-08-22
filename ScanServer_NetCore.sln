@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.31424.327
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScanServer_NetCore", "ScanServer_NetCore\ScanServer_NetCore.csproj", "{F658E256-45DE-4980-B918-AD6F20521BCA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScanServer_NetCore_Tests", "ScanServer_NetCore_Tests\ScanServer_NetCore_Tests.csproj", "{1880A657-4F5A-45BE-99F8-87A51DDA61EF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScanServer_NetCore_Tests", "ScanServer_NetCore_Tests\ScanServer_NetCore_Tests.csproj", "{1880A657-4F5A-45BE-99F8-87A51DDA61EF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
