@@ -1,9 +1,9 @@
-﻿using JetBrains.Annotations;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using PdfSharpCore.Pdf;
 using PdfSharpCore.Pdf.IO;
 using ScanServer_NetCore.Services.Helper;
 using ScanServer_NetCore.Services.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -28,9 +28,17 @@ namespace ScanServer_NetCore.Services.Implementations
             {
                 return false;
             }
-            File.Delete(filePath);
-            var fileGotDeleted = !File.Exists(filePath);
-            return fileGotDeleted;
+            try
+            {
+                File.Delete(filePath);
+                var fileGotDeleted = !File.Exists(filePath);
+                return fileGotDeleted;
+            }
+            catch(Exception e)
+            {
+                _logger.LogError($"Exception while trying to delete file at '{filePath}'!", e);
+                return false;
+            }
         }
 
 
@@ -38,11 +46,11 @@ namespace ScanServer_NetCore.Services.Implementations
         {
             var workingFolder = Path.Combine(_baseFolder, folderName);
             var fullFilePaths = filesToMerge.Select(f => Path.Combine(workingFolder, f)).ToList();
-            var doAllFilesExist = fullFilePaths.All(filePath => File.Exists(filePath));
-            if (!doAllFilesExist)
+            var nonExistingFile = fullFilePaths.FirstOrDefault(file => !File.Exists(file));
+            if (!string.IsNullOrEmpty(nonExistingFile))
             {
-                var nonExistingFile = fullFilePaths.FirstOrDefault(file => !File.Exists(file));
-                throw new FileNotFoundException($"File at '{nonExistingFile}' could not be found!");
+                _logger.LogError($"File at '{nonExistingFile}' could not be found!");
+                return null;
             }
             using var outputDocument = new PdfDocument();
             _logger.LogInformation($"Starting to merge {fullFilePaths.Count} files...");
