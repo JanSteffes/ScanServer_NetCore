@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using ScanServer_NetCore.Middlewares.Extensions;
 using ScanServer_NetCore.Services.Implementations;
 using ScanServer_NetCore.Services.Interfaces;
 using System;
@@ -74,6 +75,7 @@ namespace ScanServer_NetCore
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseDeveloperExceptionPage();
+            app.UseRequestResponseLogging();
             // Register the Swagger generator and the Swagger UI middlewares
             app.UseOpenApi();
             app.UseSwaggerUi3();
