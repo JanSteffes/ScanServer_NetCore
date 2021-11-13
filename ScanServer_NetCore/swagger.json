@@ -1,8 +1,9 @@
 {
-  "x-generator": "NSwag v13.13.2.0 (NJsonSchema v10.5.2.0 (Newtonsoft.Json v9.0.0.0))",
+  "x-generator": "NSwag v13.14.3.0 (NJsonSchema v10.5.2.0 (Newtonsoft.Json v9.0.0.0))",
   "swagger": "2.0",
   "info": {
     "title": "My Title",
+    "description": "Generated at last start from 13.11.2021 16:45:46",
     "version": "1.0.0"
   },
   "host": "localhost:44309",
@@ -20,6 +21,7 @@
         "tags": [
           "File"
         ],
+        "summary": "Merge the given files and return result name.",
         "operationId": "File_MergeFiles",
         "consumes": [
           "application/json",
@@ -32,6 +34,7 @@
             "name": "folder",
             "in": "path",
             "required": true,
+            "description": "folder of both files",
             "x-nullable": true
           },
           {
@@ -47,8 +50,15 @@
             "required": true,
             "schema": {
               "type": "array",
+              "xml": {
+                "name": "ArrayOfstring",
+                "wrapped": true
+              },
               "items": {
-                "type": "string"
+                "type": "string",
+                "xml": {
+                  "name": "string"
+                }
               }
             },
             "x-nullable": false
@@ -57,7 +67,7 @@
         "responses": {
           "200": {
             "x-nullable": false,
-            "description": "",
+            "description": "name of the result file, can be null",
             "schema": {
               "type": "string"
             }
@@ -77,6 +87,7 @@
         "tags": [
           "File"
         ],
+        "summary": "Delete given file.",
         "operationId": "File_DeleteFile",
         "parameters": [
           {
@@ -84,6 +95,7 @@
             "name": "folder",
             "in": "path",
             "required": true,
+            "description": "folder of file",
             "x-nullable": true
           },
           {
@@ -110,12 +122,14 @@
         "tags": [
           "File"
         ],
+        "summary": "Return file",
         "operationId": "File_ReadFile",
         "parameters": [
           {
             "type": "string",
             "name": "folder",
             "in": "query",
+            "description": "folder of file",
             "x-nullable": true
           },
           {
@@ -148,6 +162,7 @@
         "tags": [
           "File"
         ],
+        "summary": "Return all files in a specific directory ordererd descending by name (newest first)",
         "operationId": "File_ReadFiles",
         "parameters": [
           {
@@ -163,8 +178,15 @@
             "description": "",
             "schema": {
               "type": "array",
+              "xml": {
+                "name": "ArrayOfstring",
+                "wrapped": true
+              },
               "items": {
-                "type": "string"
+                "type": "string",
+                "xml": {
+                  "name": "string"
+                }
               }
             }
           },
@@ -183,6 +205,7 @@
         "tags": [
           "File"
         ],
+        "summary": "Rename a file",
         "operationId": "File_RenameFile",
         "parameters": [
           {
@@ -230,6 +253,7 @@
         "tags": [
           "File"
         ],
+        "summary": "Return all folders",
         "operationId": "File_ReadFolders",
         "responses": {
           "200": {
@@ -237,8 +261,15 @@
             "description": "",
             "schema": {
               "type": "array",
+              "xml": {
+                "name": "ArrayOfstring",
+                "wrapped": true
+              },
               "items": {
-                "type": "string"
+                "type": "string",
+                "xml": {
+                  "name": "string"
+                }
               }
             }
           }
@@ -250,24 +281,28 @@
         "tags": [
           "Scan"
         ],
+        "summary": "Scan a file to the given folder and fileName",
         "operationId": "Scan_Scan",
         "parameters": [
           {
             "type": "string",
             "name": "folderName",
             "in": "query",
+            "description": "folder to put result in",
             "x-nullable": true
           },
           {
             "type": "string",
             "name": "fileName",
             "in": "query",
+            "description": "name the file should get",
             "x-nullable": true
           },
           {
             "type": "string",
             "name": "scanQuality",
             "in": "query",
+            "description": "quality to scan with",
             "x-schema": {
               "$ref": "#/definitions/ScanQuality"
             },
@@ -283,7 +318,7 @@
         "responses": {
           "200": {
             "x-nullable": false,
-            "description": "",
+            "description": "filename of the resultfile (may changed if original name was taken) or null if scanning failed",
             "schema": {
               "type": "string"
             }
@@ -302,7 +337,7 @@
   "definitions": {
     "ScanQuality": {
       "type": "string",
-      "description": "",
+      "description": "Predefined scan quality options",
       "x-enumNames": [
         "Fast",
         "Normal",
@@ -316,5 +351,15 @@
         "Best"
       ]
     }
-  }
+  },
+  "tags": [
+    {
+      "name": "File",
+      "description": "Controller to hanlde FileActions like merging, deleting, showing,..."
+    },
+    {
+      "name": "Scan",
+      "description": "Controller to handle scan action and returning available quality options"
+    }
+  ]
 }

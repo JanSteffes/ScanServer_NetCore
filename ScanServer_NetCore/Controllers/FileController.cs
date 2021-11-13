@@ -27,6 +27,7 @@ namespace ScanServer_NetCore.Controllers
         /// <summary>
         /// Merge the given files and return result name.
         /// </summary>
+        /// <param name="folder">folder of both files</param>
         /// <param name="filesToMerge"></param>
         /// <param name="resultFileName"></param>
         /// <returns>name of the result file, can be null</returns>
@@ -48,7 +49,8 @@ namespace ScanServer_NetCore.Controllers
         /// <summary>
         /// Delete given file.
         /// </summary>
-        /// <param name="fileToDelete"></param>
+        /// <param name="folder">folder of file</param>
+        /// <param name="fileName"></param>
         /// <returns></returns>
         [Route("[action]/{folder}/{fileName}")]
         [HttpDelete]
@@ -63,6 +65,7 @@ namespace ScanServer_NetCore.Controllers
         /// <summary>
         /// Return file
         /// </summary>
+        /// <param name="folder">folder of file</param>
         /// <param name="fileToRead"></param>
         /// <returns></returns>
         [HttpGet]
@@ -107,7 +110,7 @@ namespace ScanServer_NetCore.Controllers
         /// <summary>
         /// Rename a file
         /// </summary>
-        /// <param name="directory"></param>
+        /// <param name="folder"></param>
         /// <param name="oldFileName"></param>
         /// <param name="newFileName"></param>
         /// <returns></returns>

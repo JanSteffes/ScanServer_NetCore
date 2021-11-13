@@ -68,7 +68,12 @@ namespace ScanServer_NetCore
             services.AddSingleton(typeof(IScanService), new ScanService(loggerFactory, AppSettings.BasePath));
             services.AddControllers();
             // Register the Swagger services
-            services.AddSwaggerDocument();
+            services.AddSwaggerDocument(con =>
+            {
+                con.GenerateXmlObjects = true;
+                con.UseControllerSummaryAsTagDescription = true;
+                con.Description = $"Generated at last start from {DateTime.Now:dd.MM.yyyy HH:mm:ss}";
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -83,7 +88,7 @@ namespace ScanServer_NetCore
             //app.UseHttpsRedirection();
 
             app.UseRouting();
-            
+
 
             app.UseAuthorization();
 
