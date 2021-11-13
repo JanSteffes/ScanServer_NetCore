@@ -27,7 +27,7 @@ namespace ScanServer_NetCore.Services.Interfaces
         bool DeleteFile(string folder, string fileToDelete);
 
         /// <summary>
-        /// Return all files in the given folder, null if folder doesn't exist.
+        /// Return all files in the given folder ordered by name desc, null if folder doesn't exist.
         /// </summary>
         /// <param name="folder"></param>
         /// <returns></returns>

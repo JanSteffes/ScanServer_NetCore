@@ -12,7 +12,10 @@ namespace ScanServer_NetCore.Controllers
     [ApiController]
     public class FileController : ControllerBase
     {
-        private IFileService _fileService;
+        /// <summary>
+        /// Service to handle files
+        /// </summary>
+        private readonly IFileService _fileService;
 
         public FileController(
             IFileService fileService)
@@ -82,7 +85,7 @@ namespace ScanServer_NetCore.Controllers
 
 
         /// <summary>
-        /// Return all files in a specific directory
+        /// Return all files in a specific directory ordererd descending by name (newest first)
         /// </summary>
         /// <param name="directory"></param>
         /// <returns></returns>

@@ -95,7 +95,7 @@ namespace ScanServer_NetCore.Services.Implementations
             }
             var files = Directory.GetFiles(folderPath);
             _logger.LogInformation($"Got {files.Count()} files: {string.Join(",", files)}");
-            var returnValue = files.Select(f => Path.GetFileName(f)).ToList();
+            var returnValue = files.Select(f => Path.GetFileName(f)).OrderByDescending(s => s).ToList();
             return returnValue;
         }
 
@@ -116,7 +116,7 @@ namespace ScanServer_NetCore.Services.Implementations
 
         public List<string> ReadFolders()
         {
-            var folders = Directory.GetDirectories(_baseFolder).Select(p => Path.GetFileName(p)).ToList();
+            var folders = Directory.GetDirectories(_baseFolder).Select(p => Path.GetFileName(p)).OrderByDescending(s => s).ToList();
             return folders;
         }
     }

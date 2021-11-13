@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace ScanServer_NetCore_Tests
 {
@@ -173,7 +174,7 @@ namespace ScanServer_NetCore_Tests
         {
             var expectedFileCounts = new List<(string directory, string[] expectedFiles)>{
                 // usual case
-                ("2021-01-01", new[]{"ExamplePdf_1.pdf", "ExamplePdf_5.pdf"}),
+                ("2021-01-01", (new[]{"ExamplePdf_1.pdf", "ExamplePdf_5.pdf"})),
                 ("2021-02-25", new[]{"ExamplePdf_1.pdf", "ExamplePdf_3.pdf", "ExamplePdf_4.pdf"}),
                 ("2021-03-15", new[]{"ExamplePdf_1.pdf", "ExamplePdf_2.pdf","ExamplePdf_3.pdf","ExamplePdf_4.pdf","ExamplePdf_5.pdf","ExamplePdf_6.pdf","ExamplePdf_7.pdf","ExamplePdf_8.pdf","ExamplePdf_9.pdf","ExamplePdf_10.pdf"})               
             };
@@ -181,6 +182,10 @@ namespace ScanServer_NetCore_Tests
             {
                 var filesInFolder = _fileService.ReadFilesOfFolder(folder);
                 CollectionAssert.AreEquivalent(expectedFiles, filesInFolder);
+                var expectedFirstFile = expectedFiles.OrderByDescending(s => s).First();
+                Assert.AreEqual(expectedFirstFile, filesInFolder.First());
+                var expectedLastFile = expectedFiles.OrderByDescending(s => s).Last();
+                Assert.AreEqual(expectedLastFile, filesInFolder.Last());
             }
         }
 

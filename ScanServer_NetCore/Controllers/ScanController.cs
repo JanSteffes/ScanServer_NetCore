@@ -16,6 +16,9 @@ namespace ScanServer_NetCore.Controllers
     {        
 
         private readonly ILogger<ScanController> _logger;
+        /// <summary>
+        /// Service to execute scans
+        /// </summary>
         private readonly IScanService _scanService;
 
         public ScanController(
