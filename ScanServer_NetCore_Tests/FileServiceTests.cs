@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using System.Linq;
+using ScanServer_NetCore.Services.Helper;
 
 namespace ScanServer_NetCore_Tests
 {
@@ -267,6 +268,32 @@ namespace ScanServer_NetCore_Tests
             var expectedFileName = "ExamplePdf_5_0.pdf";
             var renamed = _fileService.RenameFile(folder, file1, resultFile);
             Assert.AreEqual(expectedFileName, renamed);
+        }
+
+        /// <summary>
+        /// For for <see cref="FileService"/>s implementaion of method <see cref="IFileService.GetThumbnailOfFile(string, string)"/>
+        /// </summary>
+        [Test]
+        public async Task CreateThumbnailTest()
+        {
+            var folder = "2021-01-01";
+            var file1 = "ExamplePdf_5.pdf";
+            var bytes = await _fileService.GetThumbnailOfFile(folder, file1);
+            Assert.IsNotNull(bytes);
+            var length = bytes.Length;
+            Assert.Greater(length, 0, "Created thumbnailData has no bytes!");
+        }       
+
+        /// <summary>
+        /// For for <see cref="FileService"/>s implementaion of method <see cref="IFileService.RenameFile(string, string, string)"/>, if file does not exist
+        /// </summary>
+        [Test]
+        public async Task CreateThumbnailTestNonExistingFile()
+        {
+            var folder = "2021-01-01";
+            var file1 = "ExamplePdf_6.pdf";
+            var bytes = await _fileService.GetThumbnailOfFile(folder, file1);
+            Assert.IsNull(bytes);
         }
 
         #region Dynamicly create folders and files

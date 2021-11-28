@@ -3,9 +3,9 @@ using ScanServer_NetCore.Services.Enums;
 using ScanServer_NetCore.Services.Helper;
 using ScanServer_NetCore.Services.Interfaces;
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
+using static ScanServer_NetCore.Services.Helper.CommandHelper;
 
 namespace ScanServer_NetCore.Services.Implementations
 {
@@ -108,22 +108,6 @@ namespace ScanServer_NetCore.Services.Implementations
             }
 
             return targetFile;
-        }
-
-        /// <summary>
-        /// Execute a command in local shell
-        /// </summary>
-        /// <param name="command"></param>
-        /// <returns></returns>
-        public async Task ExecuteCommand(string command)
-        {
-            var proc = new Process();
-            proc.StartInfo.FileName = "/bin/bash";
-            proc.StartInfo.Arguments = "-c \" " + command + " \"";
-            proc.StartInfo.UseShellExecute = false;
-            proc.StartInfo.RedirectStandardOutput = true;
-            proc.Start();
-            await proc.WaitForExitAsync();            
-        }
+        }        
     }
 }

@@ -1,9 +1,9 @@
 {
-  "x-generator": "NSwag v13.14.3.0 (NJsonSchema v10.5.2.0 (Newtonsoft.Json v9.0.0.0))",
+  "x-generator": "NSwag v13.14.7.0 (NJsonSchema v10.5.2.0 (Newtonsoft.Json v9.0.0.0))",
   "swagger": "2.0",
   "info": {
     "title": "My Title",
-    "description": "Generated at last start from 13.11.2021 16:45:46",
+    "description": "Generated at last start from 28.11.2021 03:56:16",
     "version": "1.0.0"
   },
   "host": "localhost:44309",
@@ -271,6 +271,46 @@
                   "name": "string"
                 }
               }
+            }
+          }
+        }
+      }
+    },
+    "/api/File/GetThumbnailOfFile/{folder}/{fileName}": {
+      "get": {
+        "tags": [
+          "File"
+        ],
+        "operationId": "File_GetThumbnailOfFile",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "folder",
+            "in": "path",
+            "required": true,
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "fileName",
+            "in": "path",
+            "required": true,
+            "x-nullable": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
+          },
+          "400": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "type": "string"
             }
           }
         }

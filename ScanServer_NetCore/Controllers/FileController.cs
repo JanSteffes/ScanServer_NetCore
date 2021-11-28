@@ -2,6 +2,7 @@
 using ScanServer_NetCore.Services.Interfaces;
 using System.Collections.Generic;
 using System.Net;
+using System.Threading.Tasks;
 
 namespace ScanServer_NetCore.Controllers
 {
@@ -140,6 +141,21 @@ namespace ScanServer_NetCore.Controllers
         {
             var folders = _fileService.ReadFolders();
             return Ok(folders);
+        }
+
+
+        [Route("[action]/{folder}/{fileName}")]
+        [HttpGet]
+        [ProducesResponseType(typeof(FileContentResult), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
+        public async Task<ActionResult> GetThumbnailOfFile(string folder, string fileName)
+        {
+            var thumbnailBytes = await _fileService.GetThumbnailOfFile(folder, fileName);
+            if (thumbnailBytes == null)
+            {
+                return BadRequest("Failed to generate thumbnail!");
+            }
+            return File(thumbnailBytes, "image/jpeg");
         }
 
 

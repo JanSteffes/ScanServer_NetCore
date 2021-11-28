@@ -1,6 +1,7 @@
 ﻿using JetBrains.Annotations;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace ScanServer_NetCore.Services.Interfaces
 {
@@ -55,5 +56,13 @@ namespace ScanServer_NetCore.Services.Interfaces
         /// <param name="newName"></param>
         /// <returns>new name of file or null on error</returns>
         string? RenameFile(string directoryOfFile, string oldName, string newName);
+
+        /// <summary>
+        /// Create thumbnail of a files first page and return it's bytes.
+        /// </summary>
+        /// <param name="directoryOfFile"></param>
+        /// <param name="fileToRead"></param>
+        /// <returns>bytes of generated thumbnail</returns>
+        Task<byte[]?> GetThumbnailOfFile(string directoryOfFile, string fileToRead);
     }
 }

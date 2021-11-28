@@ -7,13 +7,27 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Threading.Tasks;
+using static ScanServer_NetCore.Services.Helper.CommandHelper;
 
 namespace ScanServer_NetCore.Services.Implementations
 {
     public class FileService : IFileService
     {
         private readonly ILogger _logger;
+
+        /// <summary>
+        /// Basefolder to work in
+        /// </summary>
         private readonly string _baseFolder;
+
+        /// <summary>
+        /// Command to create thumbnails using ghostscript.
+        /// <br />{0} is inputfile to create thumnbail from
+        /// <br />{1} is tempfile to read data from and delete after doing so
+        /// </summary>
+        private const string ghostScriptThumbnailCommand = "gs -sDEVICE=jpeg -dPDFFitPage=true -dFirstPage=1 -dLastPage=1 -dNOPAUSE -dBATCH -dDEVICEWIDTHPOINTS=250 -dDEVICEHEIGHTPOINTS=250 -sOutputFile=";
 
         public FileService(ILoggerFactory loggerFactory, string baseFolder)
         {
@@ -118,6 +132,45 @@ namespace ScanServer_NetCore.Services.Implementations
         {
             var folders = Directory.GetDirectories(_baseFolder).Select(p => Path.GetFileName(p)).OrderByDescending(s => s).ToList();
             return folders;
+        }
+
+        public async Task<byte[]?> GetThumbnailOfFile(string directoryOfFile, string fileToRead)
+        {
+            // create thumbnail using ghostscript
+            var folderPath = Path.Combine(_baseFolder, directoryOfFile);
+            var inputFilePath = Path.Combine(folderPath, fileToRead);
+            if (!File.Exists(inputFilePath))
+            {
+                return null;
+            }
+            var tempFileName = Path.GetTempFileName();
+            string createThumbnailCommand;
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
+                createThumbnailCommand = ghostScriptThumbnailCommand + $"'{tempFileName}'" + " " + $"'{inputFilePath}'";
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                createThumbnailCommand = ghostScriptThumbnailCommand + @$"""{tempFileName}""" + " " + @$"""{inputFilePath}""";
+            }
+            else
+            {
+                throw new NotImplementedException($"Function not implemented for '{RuntimeInformation.OSDescription}'!");
+            }
+            _logger.LogInformation($"Will create thumbnail with command '{createThumbnailCommand}'");
+            await ExecuteCommand(createThumbnailCommand);
+            if (!File.Exists(tempFileName))
+            {
+                return null;
+            }
+            var bytes = await File.ReadAllBytesAsync(tempFileName);
+            File.Delete(tempFileName);
+            if (File.Exists(tempFileName))
+            {
+                throw new Exception($"File '{tempFileName}' did not get deleted properly!");
+            }
+            return bytes;
         }
     }
 }
