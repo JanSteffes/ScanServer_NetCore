@@ -20,7 +20,11 @@ namespace ScanServer_NetCore
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>();
+                    webBuilder
+                    .UseIISIntegration()
+                    .UseUrls("https://0.0.0.0:44309", "http://0.0.0.0:6933")
+                    .UseStartup<Startup>();
+                    
                 });
     }
 }

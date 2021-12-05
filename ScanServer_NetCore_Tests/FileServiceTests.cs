@@ -177,7 +177,8 @@ namespace ScanServer_NetCore_Tests
                 // usual case
                 ("2021-01-01", (new[]{"ExamplePdf_1.pdf", "ExamplePdf_5.pdf"})),
                 ("2021-02-25", new[]{"ExamplePdf_1.pdf", "ExamplePdf_3.pdf", "ExamplePdf_4.pdf"}),
-                ("2021-03-15", new[]{"ExamplePdf_1.pdf", "ExamplePdf_2.pdf","ExamplePdf_3.pdf","ExamplePdf_4.pdf","ExamplePdf_5.pdf","ExamplePdf_6.pdf","ExamplePdf_7.pdf","ExamplePdf_8.pdf","ExamplePdf_9.pdf","ExamplePdf_10.pdf"})               
+                ("2021-03-15", new[]{"ExamplePdf_1.pdf", "ExamplePdf_2.pdf","ExamplePdf_3.pdf","ExamplePdf_4.pdf","ExamplePdf_5.pdf","ExamplePdf_6.pdf","ExamplePdf_7.pdf","ExamplePdf_8.pdf","ExamplePdf_9.pdf","ExamplePdf_10.pdf"}),
+                ("2021-04-16", (new[]{"outputfile.jpeg"})),
             };
             foreach (var (folder, expectedFiles) in expectedFileCounts)
             {
@@ -224,6 +225,7 @@ namespace ScanServer_NetCore_Tests
                 "2021-01-01",
                 "2021-02-25",
                 "2021-03-15",
+                "2021-04-16",
                 DateTime.Today.ToString("yyyy-MM-dd")
             };
             var foldersRead = _fileService.ReadFolders();
@@ -292,6 +294,18 @@ namespace ScanServer_NetCore_Tests
         {
             var folder = "2021-01-01";
             var file1 = "ExamplePdf_6.pdf";
+            var bytes = await _fileService.GetThumbnailOfFile(folder, file1);
+            Assert.IsNull(bytes);
+        }
+
+        /// <summary>
+        /// For for <see cref="FileService"/>s implementaion of method <see cref="IFileService.RenameFile(string, string, string)"/>, if file does not exist
+        /// </summary>
+        [Test]
+        public async Task CreateThumbnailTestNonPdfFile()
+        {
+            var folder = "2021-04-16";
+            var file1 = "outputfile.jpeg";
             var bytes = await _fileService.GetThumbnailOfFile(folder, file1);
             Assert.IsNull(bytes);
         }

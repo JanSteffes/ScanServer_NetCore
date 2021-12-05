@@ -5,6 +5,7 @@ using ScanServer_NetCore.Services.Helper;
 using ScanServer_NetCore.Services.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -22,12 +23,19 @@ namespace ScanServer_NetCore.Services.Implementations
         /// </summary>
         private readonly string _baseFolder;
 
+        private double thumbNailWidthToHeightRatio = 1.4142449185284730388039643877037;
+
+        private int thumbNailWidthPoints = 2480; // see https://www.papersizes.org/a-sizes-in-pixels.htm
+
+        private int thumbNailHeightPoints => (int)(thumbNailWidthPoints * thumbNailWidthToHeightRatio);
+
         /// <summary>
         /// Command to create thumbnails using ghostscript.
         /// <br />{0} is inputfile to create thumnbail from
         /// <br />{1} is tempfile to read data from and delete after doing so
+        /// <br /> ratio from width to height should be 1 to 1.4.1 (100 width = 141 height)
         /// </summary>
-        private const string ghostScriptThumbnailCommand = "gs -sDEVICE=jpeg -dPDFFitPage=true -dFirstPage=1 -dLastPage=1 -dNOPAUSE -dBATCH -dDEVICEWIDTHPOINTS=250 -dDEVICEHEIGHTPOINTS=250 -sOutputFile=";
+        private string ghostScriptThumbnailCommand => $"gs -sDEVICE=jpeg -dPDFFitPage=true -dFirstPage=1 -dLastPage=1 -dNOPAUSE -dBATCH -dDEVICEWIDTHPOINTS={thumbNailWidthPoints} -dDEVICEHEIGHTPOINTS={thumbNailHeightPoints} -sOutputFile=";
 
         public FileService(ILoggerFactory loggerFactory, string baseFolder)
         {
@@ -139,7 +147,7 @@ namespace ScanServer_NetCore.Services.Implementations
             // create thumbnail using ghostscript
             var folderPath = Path.Combine(_baseFolder, directoryOfFile);
             var inputFilePath = Path.Combine(folderPath, fileToRead);
-            if (!File.Exists(inputFilePath))
+            if (!File.Exists(inputFilePath) || Path.GetExtension(inputFilePath).ToLowerInvariant() != ".pdf")
             {
                 return null;
             }
@@ -170,7 +178,29 @@ namespace ScanServer_NetCore.Services.Implementations
             {
                 throw new Exception($"File '{tempFileName}' did not get deleted properly!");
             }
+            Debug.WriteLine($"==> Generated thumbnail of '{fileToRead}' is {BytesToHumanReadable((ulong)bytes.Length)}");
             return bytes;
+        }
+
+        public const long OneKB = 1024;
+
+        public const long OneMB = OneKB * OneKB;
+
+        public const long OneGB = OneMB * OneKB;
+
+        public const long OneTB = OneGB * OneKB;
+
+        public static string BytesToHumanReadable(ulong bytes)
+        {
+            return bytes switch
+            {
+                (< OneKB) => $"{bytes}B",
+                (>= OneKB) and (< OneMB) => $"{bytes / OneKB}KB",
+                (>= OneMB) and (< OneGB) => $"{bytes / OneMB}MB",
+                (>= OneGB) and (< OneTB) => $"{bytes / OneMB}GB",
+                (>= OneTB) => $"{bytes / OneTB}"
+                //...
+            };
         }
     }
 }
