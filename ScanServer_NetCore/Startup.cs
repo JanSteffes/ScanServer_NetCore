@@ -79,6 +79,7 @@ namespace ScanServer_NetCore
             {
                 builder.SetMinimumLevel(LogLevel.Information);
                 builder.AddEventSourceLogger();
+                builder.AddConsole();
             });
             StartupLogger = loggerFactory.CreateLogger<Startup>();
             StartupLogger.LogInformation($"Using basePath {AppSettings.BasePath}");

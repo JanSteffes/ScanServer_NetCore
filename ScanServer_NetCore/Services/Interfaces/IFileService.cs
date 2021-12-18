@@ -58,7 +58,7 @@ namespace ScanServer_NetCore.Services.Interfaces
         string? RenameFile(string directoryOfFile, string oldName, string newName);
 
         /// <summary>
-        /// Create thumbnail of a files first page and return it's bytes.
+        /// Create thumbnail of a files first page and return it's bytes. Will also save that thumbnail and return that next time instead of calculating anew. Should delete all thumbnails not "needed" anymore (file deleted/renamed).
         /// </summary>
         /// <param name="directoryOfFile"></param>
         /// <param name="fileToRead"></param>

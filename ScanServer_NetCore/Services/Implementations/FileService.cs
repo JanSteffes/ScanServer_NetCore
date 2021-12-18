@@ -5,7 +5,6 @@ using ScanServer_NetCore.Services.Helper;
 using ScanServer_NetCore.Services.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -23,10 +22,24 @@ namespace ScanServer_NetCore.Services.Implementations
         /// </summary>
         private readonly string _baseFolder;
 
+        /// <summary>
+        /// Directory to keep thumbnails in. Should always be in same dir as the file.
+        /// </summary>
+        private const string _thumbnailDirectoryName = "Thumbnails";
+
+        /// <summary>
+        /// Ratio from width to height for a4 paper size
+        /// </summary>
         private double thumbNailWidthToHeightRatio = 1.4142449185284730388039643877037;
 
+        /// <summary>
+        /// Default width points for a good quality thumbnail
+        /// </summary>
         private int thumbNailWidthPoints = 2480; // see https://www.papersizes.org/a-sizes-in-pixels.htm
 
+        /// <summary>
+        /// Calculate thumbNailHeight using <see cref="thumbNailWidthPoints"/> and multiply with <see cref="thumbNailWidthToHeightRatio"/>
+        /// </summary>
         private int thumbNailHeightPoints => (int)(thumbNailWidthPoints * thumbNailWidthToHeightRatio);
 
         /// <summary>
@@ -129,6 +142,12 @@ namespace ScanServer_NetCore.Services.Implementations
             {
                 return null;
             }
+            // special case: rename file with the same name
+            if (oldName == newName)
+            {
+                // just return the old name
+                return oldName;
+            }
             var newFilePath = Path.Combine(folderPath, newName);
             var validatedNewFilePath = FileHelper.GetValidFileName(newFilePath);      
             File.Copy(oldFilePath, validatedNewFilePath);
@@ -144,13 +163,21 @@ namespace ScanServer_NetCore.Services.Implementations
 
         public async Task<byte[]?> GetThumbnailOfFile(string directoryOfFile, string fileToRead)
         {
-            // create thumbnail using ghostscript
+            // validate file exists
             var folderPath = Path.Combine(_baseFolder, directoryOfFile);
             var inputFilePath = Path.Combine(folderPath, fileToRead);
             if (!File.Exists(inputFilePath) || Path.GetExtension(inputFilePath).ToLowerInvariant() != ".pdf")
             {
                 return null;
             }
+            // check if thumbnail exists already
+            var thumnailFilePath = GetThumbnalFilePath(folderPath, fileToRead);
+            if (File.Exists(thumnailFilePath))
+            {
+                var existingThumbnailFilebytes = await File.ReadAllBytesAsync(thumnailFilePath);
+                return existingThumbnailFilebytes;
+            }
+            // does not exist, create and save it
             var tempFileName = Path.GetTempFileName();
             string createThumbnailCommand;
 
@@ -172,15 +199,34 @@ namespace ScanServer_NetCore.Services.Implementations
             {
                 return null;
             }
-            var bytes = await File.ReadAllBytesAsync(tempFileName);
+            var generatedThumbnailBytes = await File.ReadAllBytesAsync(tempFileName);
             File.Delete(tempFileName);
             if (File.Exists(tempFileName))
             {
                 throw new Exception($"File '{tempFileName}' did not get deleted properly!");
             }
-            Debug.WriteLine($"==> Generated thumbnail of '{fileToRead}' is {BytesToHumanReadable((ulong)bytes.Length)}");
-            return bytes;
+            // save file to thumbnailPath
+            var directoryName = Path.GetDirectoryName(thumnailFilePath);
+            if (!string.IsNullOrEmpty(directoryName))
+            {
+                Directory.CreateDirectory(directoryName);
+                await File.WriteAllBytesAsync(thumnailFilePath, generatedThumbnailBytes);
+            }
+            else
+            {
+                _logger.LogError($"Could not create directory for file '{thumnailFilePath}'!");
+            }
+            _logger.LogInformation($"Generated thumbnail of '{fileToRead}' is {BytesToHumanReadable((ulong)generatedThumbnailBytes.Length)}");
+            return generatedThumbnailBytes;
         }
+
+        /// <summary>
+        /// Return path to thumbnailfile for given path
+        /// </summary>
+        /// <param name="directory"></param>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        private static string GetThumbnalFilePath(string directory, string fileName) => Path.Combine(directory, _thumbnailDirectoryName, fileName + "_thumb");
 
         public const long OneKB = 1024;
 
@@ -190,7 +236,7 @@ namespace ScanServer_NetCore.Services.Implementations
 
         public const long OneTB = OneGB * OneKB;
 
-        public static string BytesToHumanReadable(ulong bytes)
+        private static string BytesToHumanReadable(ulong bytes)
         {
             return bytes switch
             {

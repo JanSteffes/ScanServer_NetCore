@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using System.Linq;
-using ScanServer_NetCore.Services.Helper;
+using System.Diagnostics;
 
 namespace ScanServer_NetCore_Tests
 {
@@ -265,9 +265,23 @@ namespace ScanServer_NetCore_Tests
         public void RenameFileTestAlreadyExistingResult()
         {
             var folder = "2021-01-01";
-            var file1 = "ExamplePdf_5.pdf";
+            var file1 = "ExamplePdf_1.pdf";
             var resultFile = "ExamplePdf_5.pdf";
             var expectedFileName = "ExamplePdf_5_0.pdf";
+            var renamed = _fileService.RenameFile(folder, file1, resultFile);
+            Assert.AreEqual(expectedFileName, renamed);
+        }
+
+        /// <summary>
+        /// For for <see cref="FileService"/>s implementaion of method <see cref="IFileService.RenameFile(string, string, string)"/>, if file is renamed if resultFile already exists and is the same file renamed correctly
+        /// </summary>
+        [Test]
+        public void RenameFileTestAlreadyExistingResultSameFile()
+        {
+            var folder = "2021-01-01";
+            var file1 = "ExamplePdf_5.pdf";
+            var resultFile = "ExamplePdf_5.pdf";
+            var expectedFileName = "ExamplePdf_5.pdf";
             var renamed = _fileService.RenameFile(folder, file1, resultFile);
             Assert.AreEqual(expectedFileName, renamed);
         }
@@ -308,6 +322,32 @@ namespace ScanServer_NetCore_Tests
             var file1 = "outputfile.jpeg";
             var bytes = await _fileService.GetThumbnailOfFile(folder, file1);
             Assert.IsNull(bytes);
+        }
+
+        /// <summary>
+        /// For for <see cref="FileService"/>s implementaion of method <see cref="IFileService.GetThumbnailOfFile(string, string)"/>
+        /// </summary>
+        [Test]
+        public async Task CreateThumbnailGetAlreadySavedTest()
+        {
+            var folder = "2021-01-01";
+            var file1 = "ExamplePdf_1.pdf";
+            var stopWatch = Stopwatch.StartNew();
+            var bytes = await _fileService.GetThumbnailOfFile(folder, file1);
+            stopWatch.Stop();
+            var generationTime = stopWatch.ElapsedMilliseconds;
+            Assert.IsNotNull(bytes);
+            var length = bytes.Length;
+            Assert.Greater(length, 0, "Created thumbnailData has no bytes!");
+            stopWatch.Restart();
+            var alreadyCreatedBytes = await _fileService.GetThumbnailOfFile(folder, file1);
+            stopWatch.Stop();
+            Assert.IsNotNull(alreadyCreatedBytes);
+            var readAlreadyCreatedLength = bytes.Length;
+            Assert.Greater(readAlreadyCreatedLength, 0, "Created thumbnailData has no bytes!");
+            var readAlraedyCreatedTime = stopWatch.ElapsedMilliseconds;
+            Assert.Less(readAlraedyCreatedTime, generationTime);
+            Console.WriteLine($"Second time was {readAlraedyCreatedTime} ms, while firstTime was {generationTime} ms");
         }
 
         #region Dynamicly create folders and files
