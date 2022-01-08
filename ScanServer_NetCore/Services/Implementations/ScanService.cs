@@ -107,7 +107,7 @@ namespace ScanServer_NetCore.Services.Implementations
                 }
             }
 
-            return targetFile;
+            return Path.GetFileName(targetFile);
         }        
     }
 }
