@@ -62,7 +62,8 @@ namespace ScanServer_NetCore.Services.Interfaces
         /// </summary>
         /// <param name="directoryOfFile"></param>
         /// <param name="fileToRead"></param>
+        /// <param name="imageFormat">png, jpeg,..</param>
         /// <returns>bytes of generated thumbnail</returns>
-        Task<byte[]?> GetThumbnailOfFile(string directoryOfFile, string fileToRead);
+        Task<byte[]?> GetThumbnailOfFile(string directoryOfFile, string fileToRead, string imageFormat);
     }
 }

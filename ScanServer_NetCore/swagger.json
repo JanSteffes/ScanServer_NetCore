@@ -3,7 +3,7 @@
   "swagger": "2.0",
   "info": {
     "title": "My Title",
-    "description": "Generated at last start from 04.12.2021 17:54:51",
+    "description": "Generated at last start from 28.02.2022 13:33:19",
     "version": "1.0.0"
   },
   "host": "localhost:44309",
@@ -372,6 +372,65 @@
           }
         }
       }
+    },
+    "/api/Update/UpdateAvailable": {
+      "get": {
+        "tags": [
+          "Update"
+        ],
+        "summary": "Returns if the app with the requesting version is old or not. ",
+        "operationId": "Update_UpdateAvailable",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "versionString",
+            "in": "query",
+            "description": "current app version",
+            "x-nullable": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          "400": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "/api/Update/GetUpdateFile": {
+      "get": {
+        "tags": [
+          "Update"
+        ],
+        "summary": "Returns the newest version as apk file",
+        "operationId": "Update_GetUpdateFile",
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
+          },
+          "400": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -400,6 +459,10 @@
     {
       "name": "Scan",
       "description": "Controller to handle scan action and returning available quality options"
+    },
+    {
+      "name": "Update",
+      "description": "Controller to handle updates if an old version of an app asks for one"
     }
   ]
 }

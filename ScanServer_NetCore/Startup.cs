@@ -40,8 +40,7 @@ namespace ScanServer_NetCore
             AppSettings = Configuration.Get<AppSettings>();
             if (string.IsNullOrEmpty(AppSettings.BasePath))
             {
-                var argumentNullException = new NullReferenceException($"BasePath cannot be null or empty!");
-                throw argumentNullException;
+                throw new NullReferenceException($"BasePath cannot be null or empty!");
             }
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
@@ -59,16 +58,25 @@ namespace ScanServer_NetCore
                     var argumentNullException = new NullReferenceException($"BasePathUserPassword cannot be null or empty!");
                     throw argumentNullException;
                 }
+                // connect drive for scandata
                 var netowrkDriveNames = Enumerable.Range((int)'A', ((int)'Z' - (int)'A') + 1).Select(s => ((char) s) + ":\\").ToList();
                 var drives = DriveInfo.GetDrives();
                 var availableNames = netowrkDriveNames.Where(name => !drives.Any(d => d.Name == name)).ToList();
-                var nd = new NetworkDrive();
-                Console.WriteLine($"Will use {availableNames.First()} as driveletter.");
-                nd.MapNetworkDrive(AppSettings.BasePath, availableNames.First(), AppSettings.BasePathUser, AppSettings.BasePathUserPassword);
+                var scanDataDrive = new NetworkDrive();
+                Console.WriteLine($"Will use {availableNames.First()} as driveletter for scansDrive");
+                scanDataDrive.MapNetworkDrive(AppSettings.ScanDataFullPath, availableNames.First(), AppSettings.BasePathUser, AppSettings.BasePathUserPassword);
+                // connect drive for app data
+                availableNames = netowrkDriveNames.Where(name => !drives.Any(d => d.Name == name)).ToList();
+                drives = DriveInfo.GetDrives();
+                var appDataDrive = new NetworkDrive();
+                Console.WriteLine($"Will use {availableNames.First()} as driveletter for appsDrive.");
+                appDataDrive.MapNetworkDrive(AppSettings.AppDataFullPath, availableNames.First(), AppSettings.BasePathUser, AppSettings.BasePathUserPassword);
 
             }
             Console.WriteLine($"==> BasePath = {AppSettings.BasePath}");
-            
+            Console.WriteLine($"==> ScanDataFullPath = {AppSettings.ScanDataFullPath}");
+            Console.WriteLine($"==> AppDataFullPath = {AppSettings.AppDataFullPath}");
+
         }
 
 
@@ -83,12 +91,9 @@ namespace ScanServer_NetCore
             });
             StartupLogger = loggerFactory.CreateLogger<Startup>();
             StartupLogger.LogInformation($"Using basePath {AppSettings.BasePath}");
-            if (string.IsNullOrEmpty(AppSettings.BasePath))
-            {
-                throw new NullReferenceException($"BasePath cannot be null or empty!");
-            }
-            services.AddSingleton(typeof(IFileService), new FileService(loggerFactory, AppSettings.BasePath));
-            services.AddSingleton(typeof(IScanService), new ScanService(loggerFactory, AppSettings.BasePath));
+            services.AddSingleton(typeof(IFileService), new FileService(loggerFactory, AppSettings.ScanDataFullPath));
+            services.AddSingleton(typeof(IScanService), new ScanService(loggerFactory, AppSettings.ScanDataFullPath));
+            services.AddSingleton(typeof(IUpdateService), new UpdateService(AppSettings.AppDataFullPath));
             services.AddControllers();
             // Register the Swagger services
             services.AddSwaggerDocument(con =>
@@ -120,7 +125,7 @@ namespace ScanServer_NetCore
                 endpoints.MapControllers();
             });
 
-            // load swagger file to local file
+            //// load swagger file to local file
             _ = LoadSwaggerFile();
         }
 
@@ -190,10 +195,10 @@ namespace ScanServer_NetCore
             public ResourceType dwType = 0;
             public ResourceDisplayType dwDisplayType = 0;
             public ResourceUsage dwUsage = 0;
-            public string lpLocalName = null;
-            public string lpRemoteName = null;
-            public string lpComment = null;
-            public string lpProvider = null;
+            public string? lpLocalName = null;
+            public string? lpRemoteName = null;
+            public string? lpComment = null;
+            public string? lpProvider = null;
         }
 
         [DllImport("mpr.dll")]

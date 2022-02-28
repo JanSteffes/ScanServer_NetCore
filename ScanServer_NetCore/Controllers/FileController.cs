@@ -150,12 +150,12 @@ namespace ScanServer_NetCore.Controllers
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
         public async Task<ActionResult> GetThumbnailOfFile(string folder, string fileName)
         {
-            var thumbnailBytes = await _fileService.GetThumbnailOfFile(folder, fileName);
+            var thumbnailBytes = await _fileService.GetThumbnailOfFile(folder, fileName, "jpeg");
             if (thumbnailBytes == null)
             {
                 return BadRequest("Failed to generate thumbnail!");
             }
-            return File(thumbnailBytes, "image/jpeg");
+            return File(thumbnailBytes, "image/jpeg", $"{folder}_{fileName}_thumbnail.jpeg", true);
         }
 
 

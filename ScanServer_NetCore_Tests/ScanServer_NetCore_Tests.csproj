@@ -27,52 +27,58 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="TestFiles\2021-01-01\ExamplePdf_1.pdf">
+    <None Update="TestFiles\AppData\scan_client_1.0.0.apk">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestFiles\2021-01-01\ExamplePdf_5.pdf">
+    <None Update="TestFiles\AppData\scan_client_1.0.1.apk">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestFiles\2021-02-25\ExamplePdf_1.pdf">
+    <None Update="TestFiles\Scans\2021-01-01\ExamplePdf_1.pdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestFiles\2021-02-25\ExamplePdf_3.pdf">
+    <None Update="TestFiles\Scans\2021-01-01\ExamplePdf_5.pdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestFiles\2021-02-25\ExamplePdf_4.pdf">
+    <None Update="TestFiles\Scans\2021-02-25\ExamplePdf_1.pdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestFiles\2021-03-15\ExamplePdf_1.pdf">
+    <None Update="TestFiles\Scans\2021-02-25\ExamplePdf_3.pdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestFiles\2021-03-15\ExamplePdf_10.pdf">
+    <None Update="TestFiles\Scans\2021-02-25\ExamplePdf_4.pdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestFiles\2021-03-15\ExamplePdf_2.pdf">
+    <None Update="TestFiles\Scans\2021-03-15\ExamplePdf_1.pdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestFiles\2021-03-15\ExamplePdf_3.pdf">
+    <None Update="TestFiles\Scans\2021-03-15\ExamplePdf_10.pdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestFiles\2021-03-15\ExamplePdf_4.pdf">
+    <None Update="TestFiles\Scans\2021-03-15\ExamplePdf_2.pdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestFiles\2021-03-15\ExamplePdf_5.pdf">
+    <None Update="TestFiles\Scans\2021-03-15\ExamplePdf_3.pdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestFiles\2021-03-15\ExamplePdf_6.pdf">
+    <None Update="TestFiles\Scans\2021-03-15\ExamplePdf_4.pdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestFiles\2021-03-15\ExamplePdf_7.pdf">
+    <None Update="TestFiles\Scans\2021-03-15\ExamplePdf_5.pdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestFiles\2021-03-15\ExamplePdf_8.pdf">
+    <None Update="TestFiles\Scans\2021-03-15\ExamplePdf_6.pdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestFiles\2021-03-15\ExamplePdf_9.pdf">
+    <None Update="TestFiles\Scans\2021-03-15\ExamplePdf_7.pdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestFiles\2021-04-16\outputfile.jpeg">
+    <None Update="TestFiles\Scans\2021-03-15\ExamplePdf_8.pdf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestFiles\Scans\2021-03-15\ExamplePdf_9.pdf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestFiles\Scans\2021-04-16\outputfile.jpeg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="TestFiles\ExamplePdf.pdf">

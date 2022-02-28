@@ -44,11 +44,11 @@ namespace ScanServer_NetCore.Services.Implementations
 
         /// <summary>
         /// Command to create thumbnails using ghostscript.
-        /// <br />{0} is inputfile to create thumnbail from
-        /// <br />{1} is tempfile to read data from and delete after doing so
         /// <br /> ratio from width to height should be 1 to 1.4.1 (100 width = 141 height)
         /// </summary>
-        private string ghostScriptThumbnailCommand => $"gs -sDEVICE=jpeg -dPDFFitPage=true -dFirstPage=1 -dLastPage=1 -dNOPAUSE -dBATCH -dDEVICEWIDTHPOINTS={thumbNailWidthPoints} -dDEVICEHEIGHTPOINTS={thumbNailHeightPoints} -sOutputFile=";
+        /// <param name="imageFormat">format of result image, e.g. jpeg, png,..</param>
+        /// <returns></returns>
+        private string ghostScriptThumbnailCommand(string imageFormat) => $"gs -sDEVICE={imageFormat} -dPDFFitPage=true -dFirstPage=1 -dLastPage=1 -dNOPAUSE -dBATCH -dDEVICEWIDTHPOINTS={thumbNailWidthPoints} -dDEVICEHEIGHTPOINTS={thumbNailHeightPoints} -sOutputFile=";
 
         public FileService(ILoggerFactory loggerFactory, string baseFolder)
         {
@@ -161,7 +161,7 @@ namespace ScanServer_NetCore.Services.Implementations
             return folders;
         }
 
-        public async Task<byte[]?> GetThumbnailOfFile(string directoryOfFile, string fileToRead)
+        public async Task<byte[]?> GetThumbnailOfFile(string directoryOfFile, string fileToRead, string imageFormat)
         {
             // validate file exists
             var folderPath = Path.Combine(_baseFolder, directoryOfFile);
@@ -171,7 +171,7 @@ namespace ScanServer_NetCore.Services.Implementations
                 return null;
             }
             // check if thumbnail exists already
-            var thumnailFilePath = GetThumbnalFilePath(folderPath, fileToRead);
+            var thumnailFilePath = GetThumbnalFilePath(folderPath, fileToRead, imageFormat);
             if (File.Exists(thumnailFilePath))
             {
                 var existingThumbnailFilebytes = await File.ReadAllBytesAsync(thumnailFilePath);
@@ -183,11 +183,11 @@ namespace ScanServer_NetCore.Services.Implementations
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
-                createThumbnailCommand = ghostScriptThumbnailCommand + $"'{tempFileName}'" + " " + $"'{inputFilePath}'";
+                createThumbnailCommand = ghostScriptThumbnailCommand(imageFormat) + $"'{tempFileName}'" + " " + $"'{inputFilePath}'";
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                createThumbnailCommand = ghostScriptThumbnailCommand + @$"""{tempFileName}""" + " " + @$"""{inputFilePath}""";
+                createThumbnailCommand = ghostScriptThumbnailCommand(imageFormat) + @$"""{tempFileName}""" + " " + @$"""{inputFilePath}""";
             }
             else
             {
@@ -225,8 +225,9 @@ namespace ScanServer_NetCore.Services.Implementations
         /// </summary>
         /// <param name="directory"></param>
         /// <param name="fileName"></param>
+        /// <param name="imageFormat">png, jpeg, ...</param>
         /// <returns></returns>
-        private static string GetThumbnalFilePath(string directory, string fileName) => Path.Combine(directory, _thumbnailDirectoryName, fileName + "_thumb");
+        private static string GetThumbnalFilePath(string directory, string fileName, string imageFormat) => Path.Combine(directory, _thumbnailDirectoryName, fileName + "." + imageFormat);
 
         public const long OneKB = 1024;
 
@@ -235,7 +236,11 @@ namespace ScanServer_NetCore.Services.Implementations
         public const long OneGB = OneMB * OneKB;
 
         public const long OneTB = OneGB * OneKB;
-
+        /// <summary>
+        /// TODO move to helper?
+        /// </summary>
+        /// <param name="bytes"></param>
+        /// <returns></returns>
         private static string BytesToHumanReadable(ulong bytes)
         {
             return bytes switch

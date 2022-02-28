@@ -51,7 +51,7 @@ namespace ScanServer_NetCore_Tests
 
 
             // setup folders and files
-            var exampleFilesFolderPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestFiles");
+            var exampleFilesFolderPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestFiles", "Scans");
             if (!Directory.Exists(exampleFilesFolderPath))
             {
                 throw new Exception("Example files do not exist!");
@@ -294,7 +294,7 @@ namespace ScanServer_NetCore_Tests
         {
             var folder = "2021-01-01";
             var file1 = "ExamplePdf_5.pdf";
-            var bytes = await _fileService.GetThumbnailOfFile(folder, file1);
+            var bytes = await _fileService.GetThumbnailOfFile(folder, file1, "jpeg");
             Assert.IsNotNull(bytes);
             var length = bytes.Length;
             Assert.Greater(length, 0, "Created thumbnailData has no bytes!");
@@ -308,7 +308,7 @@ namespace ScanServer_NetCore_Tests
         {
             var folder = "2021-01-01";
             var file1 = "ExamplePdf_6.pdf";
-            var bytes = await _fileService.GetThumbnailOfFile(folder, file1);
+            var bytes = await _fileService.GetThumbnailOfFile(folder, file1, "jpeg");
             Assert.IsNull(bytes);
         }
 
@@ -320,7 +320,7 @@ namespace ScanServer_NetCore_Tests
         {
             var folder = "2021-04-16";
             var file1 = "outputfile.jpeg";
-            var bytes = await _fileService.GetThumbnailOfFile(folder, file1);
+            var bytes = await _fileService.GetThumbnailOfFile(folder, file1, "jpeg");
             Assert.IsNull(bytes);
         }
 
@@ -333,14 +333,14 @@ namespace ScanServer_NetCore_Tests
             var folder = "2021-01-01";
             var file1 = "ExamplePdf_1.pdf";
             var stopWatch = Stopwatch.StartNew();
-            var bytes = await _fileService.GetThumbnailOfFile(folder, file1);
+            var bytes = await _fileService.GetThumbnailOfFile(folder, file1, "jpeg");
             stopWatch.Stop();
             var generationTime = stopWatch.ElapsedMilliseconds;
             Assert.IsNotNull(bytes);
             var length = bytes.Length;
             Assert.Greater(length, 0, "Created thumbnailData has no bytes!");
             stopWatch.Restart();
-            var alreadyCreatedBytes = await _fileService.GetThumbnailOfFile(folder, file1);
+            var alreadyCreatedBytes = await _fileService.GetThumbnailOfFile(folder, file1, "jpeg");
             stopWatch.Stop();
             Assert.IsNotNull(alreadyCreatedBytes);
             var readAlreadyCreatedLength = bytes.Length;
