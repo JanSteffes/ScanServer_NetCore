@@ -11,11 +11,11 @@ namespace ScanServer_NetCore.Controllers
     /// </summary>
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public class UpdateController : ControllerBase
+    public class StatusController : ControllerBase
     {
         private IUpdateService _updateService;
 
-        public UpdateController(IUpdateService updateService)
+        public StatusController(IUpdateService updateService)
         {
             _updateService = updateService;
         }
@@ -49,6 +49,17 @@ namespace ScanServer_NetCore.Controllers
                 contentType = "application/octet-stream";
             }
             return File(newestFileInfo.OpenRead(), contentType, newestFileInfo.Name, true);
+        }
+
+        /// <summary>
+        /// Return true, used to see if server is reachable/running
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [ProducesResponseType(typeof(bool), (int) HttpStatusCode.OK)]
+        public bool Ping()
+        {
+            return true;
         }
 
         
