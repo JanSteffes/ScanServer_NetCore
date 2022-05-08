@@ -45,7 +45,7 @@ namespace ScanServer_NetCore
 
         private static void StartReceiveThread(int port)
         {
-            var httpsListener = new UdpClient(port);
+            var udpClient = new UdpClient(port);
             var httpsEndpoint = new IPEndPoint(IPAddress.Any, port);
             new Thread(() =>
             {
@@ -54,9 +54,10 @@ namespace ScanServer_NetCore
                     try
                     {
                         Debug.WriteLine($"==> [Port {port}] Waiting to receive bytes..");
-                        var bytes = httpsListener.Receive(ref httpsEndpoint);
+                        var bytes = udpClient.Receive(ref httpsEndpoint);
                         Debug.WriteLine($"==> [Port {port}] Got {bytes.Length} bytes, answering...");
-                        _ = httpsListener.SendAsync(bytes, bytes.Length);
+                        udpClient.Connect(httpsEndpoint);
+                        _ = udpClient.SendAsync(bytes, bytes.Length);
                         Debug.WriteLine($"==> [Port {port}] Did send same bytes back");
                     }
                     catch (Exception e)
