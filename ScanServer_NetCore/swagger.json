@@ -3,7 +3,7 @@
   "swagger": "2.0",
   "info": {
     "title": "My Title",
-    "description": "Generated at last start from 28.02.2022 13:33:19",
+    "description": "Generated at last start from 08.05.2022 16:02:16",
     "version": "1.0.0"
   },
   "host": "localhost:44309",
@@ -373,13 +373,13 @@
         }
       }
     },
-    "/api/Update/UpdateAvailable": {
+    "/api/Status/UpdateAvailable": {
       "get": {
         "tags": [
-          "Update"
+          "Status"
         ],
         "summary": "Returns if the app with the requesting version is old or not. ",
-        "operationId": "Update_UpdateAvailable",
+        "operationId": "Status_UpdateAvailable",
         "parameters": [
           {
             "type": "string",
@@ -407,13 +407,13 @@
         }
       }
     },
-    "/api/Update/GetUpdateFile": {
+    "/api/Status/GetUpdateFile": {
       "get": {
         "tags": [
-          "Update"
+          "Status"
         ],
         "summary": "Returns the newest version as apk file",
-        "operationId": "Update_GetUpdateFile",
+        "operationId": "Status_GetUpdateFile",
         "responses": {
           "200": {
             "x-nullable": false,
@@ -427,6 +427,24 @@
             "description": "",
             "schema": {
               "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "/api/Status/Ping": {
+      "get": {
+        "tags": [
+          "Status"
+        ],
+        "summary": "Return true, used to see if server is reachable/running",
+        "operationId": "Status_Ping",
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "type": "boolean"
             }
           }
         }
@@ -461,7 +479,7 @@
       "description": "Controller to handle scan action and returning available quality options"
     },
     {
-      "name": "Update",
+      "name": "Status",
       "description": "Controller to handle updates if an old version of an app asks for one"
     }
   ]
