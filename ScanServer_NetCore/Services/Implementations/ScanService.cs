@@ -55,7 +55,7 @@ namespace ScanServer_NetCore.Services.Implementations
             try
             {
                 // scan
-                var scanCommand = $"scanimage --format=tiff --resolution { (int)scanQuality } > {tempTiffFile}";
+                var scanCommand = $"scanimage --format=tiff --resolution { (int)scanQuality } > '{tempTiffFile}'";
                 _logger.LogInformation($"Will scan with command '{scanCommand}'..");
                 await ExecuteCommand(scanCommand);
                 if (!File.Exists(tempTiffFile))
@@ -64,7 +64,7 @@ namespace ScanServer_NetCore.Services.Implementations
                 }
 
                 // convert fiff to pdf
-                var tiffToPdfCommand = $"tiff2pdf -o {tempPdfFile} {tempTiffFile}";
+                var tiffToPdfCommand = $"tiff2pdf -o '{tempPdfFile}' '{tempTiffFile}'";
                 _logger.LogInformation($"Will convert to temp pdf with command '{tiffToPdfCommand}'");
                 await ExecuteCommand(tiffToPdfCommand);
                 if (!File.Exists(tempPdfFile))
@@ -73,7 +73,7 @@ namespace ScanServer_NetCore.Services.Implementations
                 }
 
                 // convert to postscript
-                var postScriptCommand = $"pdftops {tempPdfFile} {tempPostScriptFile}";
+                var postScriptCommand = $"pdftops '{tempPdfFile}' '{tempPostScriptFile}'";
                 _logger.LogInformation($"Will convert to ps with command '{postScriptCommand}'");
                 await ExecuteCommand(postScriptCommand);
                 if (!File.Exists(tempPostScriptFile))
@@ -82,7 +82,7 @@ namespace ScanServer_NetCore.Services.Implementations
                 }
 
                 // convert to final pdf
-                var finalPdfConvertCommand = $"ps2pdf {tempPostScriptFile} {targetFile}";
+                var finalPdfConvertCommand = $"ps2pdf '{tempPostScriptFile}' '{targetFile}'";
                 _logger.LogInformation($"Will convert to final pdf with command '{finalPdfConvertCommand}'");
                 await ExecuteCommand(finalPdfConvertCommand);
                 if (!File.Exists(targetFile))
